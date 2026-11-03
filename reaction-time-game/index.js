@@ -1,35 +1,30 @@
-const targetEl = document.getElementById("target");
-const symbolEl = document.getElementById("symbol");
-const messageEl = document.getElementById("message");
-const hintEl = document.getElementById("hint");
-const lastEl = document.getElementById("last");
-const bestEl = document.getElementById("best");
-const statusEl = document.getElementById("status"); 
+const targets = document.getElementById("target");
+const symbols = document.getElementById("symbol");
+const messages = document.getElementById("message");
+const hints = document.getElementById("hint");
+const lastScore = document.getElementById("last");
+const bestScore = document.getElementById("best");
 
 let state = "idle";
 let timeoutId;
 let readyAt = 0;
 let best = null;
 
-const showPanel = (background, text, symbol, message, hint) => {
-  targetEl.classList.remove("bg-zinc-800", "bg-rose-950", "bg-lime-200", "text-zinc-100", "text-zinc-950");
-  targetEl.classList.add(background, text);
-  symbolEl.textContent = symbol;
-  messageEl.textContent = message;
-  hintEl.textContent = hint;
-  
-  if (statusEl) {
-    statusEl.textContent = message;
-  }
+const showPanel = (bgColor, textColor, symbol, message, hint) => {
+  targets.style.backgroundColor = bgColor;
+  targets.style.color = textColor;
+  symbols.textContent = symbol;
+  messages.textContent = message;
+  hints.textContent = hint;
 };
 
 const startRound = () => {
   state = "waiting";
-  showPanel("bg-rose-950", "text-zinc-100", "…", "Wait for green", "Not yet. Stay ready.");
+  showPanel("#4c0519", "#f4f4f5", "…", "Wait for green", "Not yet. Stay ready.");
   timeoutId = setTimeout(
     () => {
       state = "ready";
-      showPanel("bg-lime-200", "text-zinc-950", "!", "Click now!", "Go, go, go!");
+      showPanel("#fef08a", "#09090b", "!", "Click now!", "Go, go, go!");
       readyAt = performance.now();
     },
     2000 + Math.random() * 3000,
@@ -40,17 +35,17 @@ const handleAction = () => {
   if (state === "waiting") {
     clearTimeout(timeoutId);
     state = "result";
-    showPanel("bg-zinc-800", "text-zinc-100", "↻", "Too soon!", "Click to try again");
+    showPanel("#27272a", "#f4f4f5", "↻", "Too soon!", "Click to try again");
   } else if (state === "ready") {
     const milliseconds = Math.round(performance.now() - readyAt);
     best = best === null ? milliseconds : Math.min(best, milliseconds);
-    lastEl.textContent = `${milliseconds} ms`;
-    bestEl.textContent = `${best} ms`;
+    lastScore.textContent = `${milliseconds} ms`;
+    bestScore.textContent = `${best} ms`;
     state = "result";
-    showPanel("bg-zinc-800", "text-zinc-100", "✓", `${milliseconds} ms`, "Click to play again");
+    showPanel("#27272a", "#f4f4f5", "✓", `${milliseconds} ms`, "Click to play again");
   } else {
     startRound();
   }
 };
 
-targetEl.addEventListener("click", handleAction);
+targets.addEventListener("click", handleAction);
